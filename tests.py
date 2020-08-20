@@ -55,6 +55,22 @@ class ElevatorTests(unittest.TestCase):
         elevator.act()
         self.assertEqual(elevator.current, 0)
 
+    def test_call_from_below(self):
+        elevator = Elevator(10, 4)
+        fromFloor = 2
+        toFloor = 5
+        elevator.call(fromFloor, toFloor)
+        elevator.act()
+        self.assertEqual(elevator.current, toFloor)
+
+    def test_call_from_above(self):
+        elevator = Elevator(10, 4)
+        fromFloor = 5
+        toFloor = 2
+        elevator.call(fromFloor, toFloor)
+        elevator.act()
+        self.assertEqual(elevator.current, toFloor)
+
 
 if __name__ == '__main__':
     unittest.main()

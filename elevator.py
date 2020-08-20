@@ -15,14 +15,21 @@ class Elevator:
         self.selected[floor] = True
 
     def call(self, fromFloor, toFloor):
-        self.check(fromFloor)
-        self.check(toFloor)
+        # Assumed the no floor has been yet selected and that there is no action
+        self.select(fromFloor)
+        self.select(toFloor)
+        self.plan(fromFloor >= self.current)
 
-    def plan(self):
+    def plan(self, up_first=True):
         current = self.current
-        current = self.plan_up(current, range(self.current, self.n))
-        if self.current > 0:
-            self.plan_down(current, range(self.current, -1, -1))
+        if up_first or self.current == 0:
+            current = self.plan_up(current, range(self.current, self.n))
+            if self.current > 0:
+                self.plan_down(current, range(self.current, -1, -1))
+        else:
+            current = self.plan_down(current, range(self.current, -1, -1))
+            self.plan_up(current, range(self.current, self.n))
+
 
     def plan_up(self, current, floors):
         for floor in floors:
