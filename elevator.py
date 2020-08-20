@@ -6,27 +6,39 @@ class Elevator:
         self.opened = False  # Can't move if the door is opened
         self.actions = []
 
-    def select(self, floor):
+    def check(self, floor):
         if floor < 0 or floor >= self.n:
             raise Exception('The chosen level is not valid')
 
+    def select(self, floor):
+        self.check(floor)
         self.selected[floor] = True
 
-    def plan(self):
+    def call(self, fromFloor, toFloor):
+        self.check(fromFloor)
+        self.check(toFloor)
 
+    def plan(self):
         current = self.current
-        for floor in range(self.current, self.n):
+        current = self.plan_up(current, range(self.current, self.n))
+        if self.current > 0:
+            self.plan_down(current, range(self.current, -1, -1))
+
+    def plan_up(self, current, floors):
+        for floor in floors:
             if self.selected[floor]:
                 steps = floor - current
                 self.actions = self.actions + ['up' for _ in range(0, steps)] + ['open', 'close']
                 current = floor
+        return current
 
-        if self.current > 0:
-            for floor in range(self.current, -1, -1):
-                if self.selected[floor]:
-                    steps = current - floor
-                    self.actions = self.actions + ['down' for _ in range(0, steps)] + ['open', 'close']
-                    current = floor
+    def plan_down(self, current, floors):
+        for floor in floors:
+            if self.selected[floor]:
+                steps = current - floor
+                self.actions = self.actions + ['down' for _ in range(0, steps)] + ['open', 'close']
+                current = floor
+        return current
 
     def up(self):
         if self.opened:
