@@ -13,7 +13,6 @@ class ElevatorTests(unittest.TestCase):
         elevator = Elevator(10)
         floor = 3
         elevator.select(floor)
-        elevator.plan()
         elevator.act()
         self.assertEqual(elevator.current, floor)
 
@@ -21,7 +20,6 @@ class ElevatorTests(unittest.TestCase):
         elevator = Elevator(10, 5)
         floor = 2
         elevator.select(floor)
-        elevator.plan()
         elevator.act()
         self.assertEqual(elevator.current, floor)
 
@@ -31,7 +29,6 @@ class ElevatorTests(unittest.TestCase):
         elevator.select(3)
         elevator.select(6)
         elevator.select(8)
-        elevator.plan()
         elevator.act()
         self.assertEqual(elevator.current, 8)
 
@@ -40,7 +37,6 @@ class ElevatorTests(unittest.TestCase):
         elevator.select(5)
         elevator.select(2)
         elevator.select(0)
-        elevator.plan()
         elevator.act()
         self.assertEqual(elevator.current, 0)
 
@@ -51,25 +47,29 @@ class ElevatorTests(unittest.TestCase):
         elevator.select(0)
         elevator.select(8)
         elevator.select(7)
-        elevator.plan()
         elevator.act()
         self.assertEqual(elevator.current, 0)
 
-    def test_call_from_below(self):
+    def test_call_and_select(self):
         elevator = Elevator(10, 4)
-        fromFloor = 2
-        toFloor = 5
-        elevator.call(fromFloor, toFloor)
+        from_floor = 2
+        to_floor = 6
+        elevator.call(from_floor)
         elevator.act()
-        self.assertEqual(elevator.current, toFloor)
+        elevator.select(to_floor)
+        elevator.act()
+        self.assertEqual(elevator.current, to_floor)
 
-    def test_call_from_above(self):
+    def test_multiple_call_and_multiple_select(self):
         elevator = Elevator(10, 4)
-        fromFloor = 5
-        toFloor = 2
-        elevator.call(fromFloor, toFloor)
+        elevator.call(1)
+        elevator.call(3)
+        elevator.call(5)
+        elevator.select(2)
+        elevator.select(5)
+        elevator.select(3)
         elevator.act()
-        self.assertEqual(elevator.current, toFloor)
+        # self.assertEqual(elevator.current, 3)
 
 
 if __name__ == '__main__':

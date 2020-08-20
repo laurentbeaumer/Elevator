@@ -13,14 +13,13 @@ class Elevator:
     def select(self, floor):
         self.check(floor)
         self.selected[floor] = True
+        self.plan()
 
-    def call(self, fromFloor, toFloor):
-        # Assumed the no floor has been yet selected and that there is no action
-        self.select(fromFloor)
-        self.select(toFloor)
-        self.plan(fromFloor >= self.current)
+    def call(self, floor):
+        self.select(floor)
 
     def plan(self, up_first=True):
+        self.actions = []
         current = self.current
         if up_first or self.current == 0:
             current = self.plan_up(current, range(self.current, self.n))
@@ -29,7 +28,6 @@ class Elevator:
         else:
             current = self.plan_down(current, range(self.current, -1, -1))
             self.plan_up(current, range(self.current, self.n))
-
 
     def plan_up(self, current, floors):
         for floor in floors:
