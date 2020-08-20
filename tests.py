@@ -3,6 +3,12 @@ from elevator import Elevator
 
 
 class ElevatorTests(unittest.TestCase):
+    def test_invalid_selected_floor(self):
+        elevator = Elevator(5)
+        floor = 5
+        with self.assertRaises(Exception):
+            elevator.select(floor)
+
     def test_select_up(self):
         elevator = Elevator(10)
         floor = 3
