@@ -3,7 +3,7 @@ from elevator import Elevator, Direction
 
 
 class ElevatorTests(unittest.TestCase):
-    def test_goto(self):
+    def test_select_method(self):
         elevator = Elevator(10)
         floor = 3
         elevator.select(floor)
