@@ -1,4 +1,5 @@
 from enum import Enum
+from functools import reduce
 
 
 class Direction(Enum):
@@ -20,12 +21,17 @@ class Elevator:
         if level <= 0 or level > self.n:
             raise Exception('The chosen level is not valid')
 
-        self.levels[level] = True
-        steps = level - self.current
-        direction = Direction[steps % 1]
+        self.levels[level - 1] = True
+        steps = (level - 1) - self.current
+        direction = Direction(steps / abs(steps))
 
-        if self.Direction == direction:
-            act = ['move' for i in steps] + ['open', 'close']
+        if self.direction == Direction.Still:
+            self.direction = direction
+
+        if self.direction == direction:
+            self.actions = ['move' for _ in range(0, steps)] + ['open', 'close']
+
+        self.act()
 
     def move(self):
         if self.opened:
@@ -48,6 +54,8 @@ class Elevator:
             {
                 'move': self.move,
                 'open': self.open,
-                'close': self.open,
-                'move': self.open,
+                'close': self.close,
             }[action]()
+
+        self.direction = Direction(self.direction.value * -1) \
+            if reduce((lambda acc, y: acc or y), self.levels, False) else Direction.Still
