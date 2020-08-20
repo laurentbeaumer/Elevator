@@ -11,18 +11,18 @@ class Direction(Enum):
 class Elevator:
     def __init__(self, n):
         self.n = n
-        self.levels = [False] * self.n
+        self.floors = [False] * self.n
         self.current = 0
         self.opened = False  # Can't move if the door is opened
         self.direction = Direction.Still
         self.actions = []
 
-    def goto(self, level):
-        if level <= 0 or level > self.n:
+    def select(self, floor):
+        if floor <= 0 or floor > self.n:
             raise Exception('The chosen level is not valid')
 
-        self.levels[level - 1] = True
-        steps = (level - 1) - self.current
+        self.floors[floor - 1] = True
+        steps = (floor - 1) - self.current
         direction = Direction(steps / abs(steps))
 
         if self.direction == Direction.Still:
@@ -44,7 +44,7 @@ class Elevator:
 
     def open(self):
         self.opened = True
-        self.levels[self.current] = False
+        self.floors[self.current] = False
 
     def close(self):
         self.opened = False
@@ -58,4 +58,4 @@ class Elevator:
             }[action]()
 
         self.direction = Direction(self.direction.value * -1) \
-            if reduce((lambda acc, y: acc or y), self.levels, False) else Direction.Still
+            if reduce((lambda acc, y: acc or y), self.floors, False) else Direction.Still

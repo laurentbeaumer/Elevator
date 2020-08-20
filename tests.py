@@ -5,9 +5,9 @@ from elevator import Elevator, Direction
 class ElevatorTests(unittest.TestCase):
     def test_goto(self):
         elevator = Elevator(10)
-        level = 3
-        elevator.goto(level)
-        self.assertEqual(elevator.current + 1, level)
+        floor = 3
+        elevator.select(floor)
+        self.assertEqual(elevator.current + 1, floor)
         self.assertEqual(elevator.direction, Direction.Still)
 
 
