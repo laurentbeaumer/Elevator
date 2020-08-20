@@ -1,50 +1,48 @@
-from enum import Enum
-from functools import reduce
-
-
-class Direction(Enum):
-    Up = 1
-    Still = 0
-    Down = -1
-
-
 class Elevator:
-    def __init__(self, n):
+    def __init__(self, n, current=0):
         self.n = n
-        self.floors = [False] * self.n
-        self.current = 0
+        self.selected = [False] * self.n
+        self.current = current
         self.opened = False  # Can't move if the door is opened
-        self.direction = Direction.Still
         self.actions = []
 
     def select(self, floor):
-        if floor <= 0 or floor > self.n:
+        if floor < 0 or floor >= self.n:
             raise Exception('The chosen level is not valid')
 
-        self.floors[floor - 1] = True
-        steps = (floor - 1) - self.current
-        direction = Direction(steps / abs(steps))
+        self.selected[floor] = True
 
-        if self.direction == Direction.Still:
-            self.direction = direction
+    def plan(self):
 
-        if self.direction == direction:
-            self.actions = ['move' for _ in range(0, steps)] + ['open', 'close']
+        current = self.current
+        for floor in range(self.current, self.n):
+            if self.selected[floor]:
+                steps = floor - current
+                self.actions = self.actions + ['up' for _ in range(0, steps)] + ['open', 'close']
+                current = floor
 
-        self.act()
+        if self.current > 0:
+            for floor in range(self.current, -1, -1):
+                if self.selected[floor]:
+                    steps = current - floor
+                    self.actions = self.actions + ['down' for _ in range(0, steps)] + ['open', 'close']
+                    current = floor
 
-    def move(self):
+    def up(self):
         if self.opened:
             raise Exception('Door is not closed, elevator cannot move')
 
-        if self.direction == Direction.Still:
-            raise Exception('There is no direction for the elevator to move')
+        self.current += 1
 
-        self.current += self.direction.value
+    def down(self):
+        if self.opened:
+            raise Exception('Door is not closed, elevator cannot move')
+
+        self.current -= 1
 
     def open(self):
         self.opened = True
-        self.floors[self.current] = False
+        self.selected[self.current] = False
 
     def close(self):
         self.opened = False
@@ -52,10 +50,9 @@ class Elevator:
     def act(self):
         for action in self.actions:
             {
-                'move': self.move,
+                'up': self.up,
+                'down': self.down,
                 'open': self.open,
                 'close': self.close,
-            }[action]()
-
-        self.direction = Direction(self.direction.value * -1) \
-            if reduce((lambda acc, y: acc or y), self.floors, False) else Direction.Still
+            }[action.lower()]()
+        self.actions = []
