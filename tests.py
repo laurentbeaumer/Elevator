@@ -65,11 +65,14 @@ class ElevatorTests(unittest.TestCase):
         elevator.call(1)
         elevator.call(3)
         elevator.call(5)
+        elevator.act()
+        self.assertEqual(elevator.current, 1)
+
         elevator.select(2)
         elevator.select(5)
         elevator.select(3)
         elevator.act()
-        # self.assertEqual(elevator.current, 3)
+        self.assertEqual(elevator.current, 5)
 
 
 if __name__ == '__main__':
