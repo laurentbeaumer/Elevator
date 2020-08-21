@@ -1,4 +1,7 @@
 import unittest
+import datetime as dt
+from time import sleep
+from controller import Controller
 from elevator import Elevator
 
 
@@ -73,6 +76,14 @@ class ElevatorTests(unittest.TestCase):
         elevator.select(3)
         elevator.act()
         self.assertEqual(elevator.current, 5)
+
+    def test_controller_delayed_command(self):
+        elevator = Elevator(10, 2)
+        controller = Controller(elevator)
+        controller.select(3, dt.datetime.now() + dt.timedelta(0, 1))
+        sleep(2)
+        self.assertEqual(elevator.current, 3)
+        self.assertEqual(controller.state, 'closed')
 
 
 if __name__ == '__main__':

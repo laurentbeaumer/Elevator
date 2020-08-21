@@ -1,3 +1,6 @@
+from events import Events
+
+
 class Elevator:
     def __init__(self, n, current=0):
         self.n = n
@@ -6,6 +9,13 @@ class Elevator:
         self.current = current
         self.opened = False  # Can't move if the door is opened
         self.actions = []
+        self.events = Events()
+
+    def subscribe(self, callback):
+        self.events.on_change += callback
+
+    def unsubscribe(self, callback):
+        self.events.on_change -= callback
 
     def check(self, floor):
         if floor < 0 or floor >= self.n:
@@ -59,6 +69,7 @@ class Elevator:
     def open(self):
         self.opened = True
         self.selected[self.current] = False
+        self.called[self.current] = False
 
     def close(self):
         self.opened = False
@@ -71,4 +82,5 @@ class Elevator:
                 'open': self.open,
                 'close': self.close,
             }[action.lower()]()
+            self.events.on_change(action)
         self.actions = []
