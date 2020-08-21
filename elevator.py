@@ -1,4 +1,5 @@
 from events import Events
+from logging import info
 
 
 class Elevator:
@@ -82,5 +83,9 @@ class Elevator:
                 'open': self.open,
                 'close': self.close,
             }[action.lower()]()
+            self.log(action)
             self.events.on_change(action)
         self.actions = []
+
+    def log(self, action):
+        info('action: {0}, floor: {1}'.format(action, self.current))
