@@ -5,6 +5,8 @@ from logging import info
 from time import sleep
 from controller import Controller
 from elevator import Elevator
+from multicontroller import MultiController
+
 logging.basicConfig(level=logging.ERROR)
 
 
@@ -88,14 +90,33 @@ class ElevatorTests(unittest.TestCase):
         elevator.act()
         self.assertEqual(elevator.current, 5)
 
-    def test_controller_delayed_command(self):
-        info("Test: {0}".format("test_controller_delayed_command"))
+    def test_controller_select(self):
+        info("Test: {0}".format("test_controller_select"))
         elevator = Elevator(10, 2)
         controller = Controller(elevator)
         controller.select(3, dt.datetime.now() + dt.timedelta(0, 1))
         sleep(2)
         self.assertEqual(elevator.current, 3)
         self.assertEqual(controller.state, 'door_closed')
+
+    def test_controller_call(self):
+        info("Test: {0}".format("test_controller_call"))
+        elevator = Elevator(10, 2)
+        controller = Controller(elevator)
+        controller.call(4, dt.datetime.now() + dt.timedelta(0, 1))
+        sleep(2)
+        self.assertEqual(elevator.current, 4)
+        self.assertEqual(controller.state, 'door_closed')
+
+    def test_multi_controller_call(self):
+        info("Test: {0}".format("test_multi_controller_call"))
+        multi_controller = MultiController(2, 10)
+        multi_controller.controllers[0].elevator.current = 2
+        multi_controller.controllers[1].elevator.current = 8
+        multi_controller.call(3, dt.datetime.now() + dt.timedelta(0, 1))
+        sleep(2)
+        self.assertEqual(multi_controller.controllers[0].elevator.current, 3)
+        self.assertEqual(multi_controller.controllers[1].elevator.current, 8)
 
 
 if __name__ == '__main__':
