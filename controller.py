@@ -8,7 +8,8 @@ class Controller:
         self.elevator = elevator
         self.state = ''
         self.elevator.subscribe(self.set_state)
-        self.lock = Lock()
+        self.lock_command = Lock()
+        self.lock_act = Lock()
 
     def call(self, floor, datetime):
         seconds = (datetime - dt.now()).total_seconds()
@@ -19,9 +20,13 @@ class Controller:
         Timer(seconds, self.command, [self.elevator.select, floor]).start()
 
     def command(self, fct, arg):
-        with self.lock:
+        # Lock to avoid concurrency issue
+        with self.lock_command:
             fct(arg)
-        self.elevator.act()
+
+        # Allow to select and call, while elevator is moving, to make it more efficient
+        with self.lock_act:
+            self.elevator.act()
 
     def set_state(self, action):
         self.state = \
